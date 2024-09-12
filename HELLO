@@ -1,0 +1,83 @@
+import pygame
+import random
+
+pygame.init()
+
+# Constantes
+
+SCREEN_W = SCREEN_H = 1000
+GRID_SIZE = 5
+BOX_SIZE = 160
+BORDER_OFFSET = (SCREEN_W - GRID_SIZE * BOX_SIZE) // 2
+
+
+screen = pygame.display.set_mode((SCREEN_W,SCREEN_H))
+
+# Grelha
+
+boxes = []
+for i in range(GRID_SIZE):  # Outer loop
+    for j in range(GRID_SIZE):  # Inner loop
+        boxX = i * BOX_SIZE + BORDER_OFFSET
+        boxY = j * BOX_SIZE + BORDER_OFFSET
+        box = pygame.Rect(boxX, boxY, BOX_SIZE, BOX_SIZE)
+        boxes.append(box)
+
+# Jogador
+
+player_box = random.choice(boxes)
+player = pygame.Rect(player_box.left + 3,
+                     player_box.top + 3,
+                     BOX_SIZE - 6, BOX_SIZE - 6)
+
+# Receiver
+
+receiver_position = 423
+receiver = pygame.Rect(receiver_position, receiver_position, 154, 154)
+
+border = pygame.Rect(BORDER_OFFSET, BORDER_OFFSET, GRID_SIZE * BOX_SIZE, GRID_SIZE * BOX_SIZE)
+
+
+player_selected = False
+
+run = True
+
+#event handler
+while run:
+
+    screen.fill((0,0,0))
+
+    # Desenhar os elementos
+    pygame.draw.rect(screen, (0,0,250),receiver)
+    pygame.draw.rect(screen, (250,0,0),player)
+    pygame.draw.rect(screen, (0,250,0),border, 6)
+
+    for box in boxes:
+        pygame.draw.rect(screen, "green", box,3)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if player.collidepoint(event.pos):
+                player_selected = not player_selected
+
+            elif player_selected and border.collidepoint(event.pos):
+                for box in boxes:
+                    if box.collidepoint(event.pos):
+                        player.center = box.center
+                        break
+                player_selected = False
+
+
+
+    pygame.display.update()
+    print (player_selected)
+
+    
+
+pygame.quit()
+
+
+# as vezes o player cai no meio
