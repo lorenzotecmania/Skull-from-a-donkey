@@ -80,4 +80,5 @@ while run:
 pygame.quit()
 
 
-# as vezes o player cai no meio a
+# as vezes o player cai no meio 
+# YUPI
