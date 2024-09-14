@@ -3,57 +3,60 @@ import random
 
 pygame.init()
 
-# Constantes
-
-SCREEN_W = SCREEN_H = 1000
+# Constants
 GRID_SIZE = 5
-BOX_SIZE = 160
-BORDER_OFFSET = (SCREEN_W - GRID_SIZE * BOX_SIZE) // 2
 
+# Set up fullscreen mode and get screen resolution
+screen_info = pygame.display.Info()
+SCREEN_W, SCREEN_H = screen_info.current_w, screen_info.current_h
+screen = pygame.display.set_mode((SCREEN_W, SCREEN_H), pygame.FULLSCREEN)
 
-screen = pygame.display.set_mode((SCREEN_W,SCREEN_H))
+# Calculate box size based on screen size
+BOX_SIZE = min(SCREEN_W, SCREEN_H) // (GRID_SIZE + 1)
+BORDER_OFFSET = (min(SCREEN_W, SCREEN_H) - GRID_SIZE * BOX_SIZE) // 2
 
-# Grelha
-
+# Create boxes (grid)
 boxes = []
 for i in range(GRID_SIZE):  # Outer loop
     for j in range(GRID_SIZE):  # Inner loop
-        boxX = i * BOX_SIZE + BORDER_OFFSET
-        boxY = j * BOX_SIZE + BORDER_OFFSET
+        boxX = i * BOX_SIZE + BORDER_OFFSET + (SCREEN_W - min(SCREEN_W, SCREEN_H)) // 2
+        boxY = j * BOX_SIZE + BORDER_OFFSET + (SCREEN_H - min(SCREEN_W, SCREEN_H)) // 2
         box = pygame.Rect(boxX, boxY, BOX_SIZE, BOX_SIZE)
         boxes.append(box)
 
-# Jogador
-
+# Player
 player_box = random.choice(boxes)
 player = pygame.Rect(player_box.left + 3,
                      player_box.top + 3,
                      BOX_SIZE - 6, BOX_SIZE - 6)
 
-# Receiver
+# Receiver (spawn in the center square of the grid)
+center_index = GRID_SIZE**2 // 2 
+center_box = boxes[center_index]
+receiver = pygame.Rect(center_box.left + 3,
+                       center_box.top + 3,
+                       BOX_SIZE - 6, BOX_SIZE - 6)
 
-receiver_position = 423
-receiver = pygame.Rect(receiver_position, receiver_position, 154, 154)
 
-border = pygame.Rect(BORDER_OFFSET, BORDER_OFFSET, GRID_SIZE * BOX_SIZE, GRID_SIZE * BOX_SIZE)
-
+# Border
+border = pygame.Rect(BORDER_OFFSET + (SCREEN_W - min(SCREEN_W, SCREEN_H)) // 2,
+                     BORDER_OFFSET + (SCREEN_H - min(SCREEN_W, SCREEN_H)) // 2,
+                     GRID_SIZE * BOX_SIZE, GRID_SIZE * BOX_SIZE)
 
 player_selected = False
-
 run = True
 
-#event handler
+# Event handler
 while run:
+    screen.fill((0, 0, 0))
 
-    screen.fill((0,0,0))
-
-    # Desenhar os elementos
-    pygame.draw.rect(screen, (0,0,250),receiver)
-    pygame.draw.rect(screen, (250,0,0),player)
-    pygame.draw.rect(screen, (0,250,0),border, 6)
+    # Draw elements
+    pygame.draw.rect(screen, (0, 0, 250), receiver)
+    pygame.draw.rect(screen, (250, 0, 0), player)
+    pygame.draw.rect(screen, (0, 250, 0), border, 6)
 
     for box in boxes:
-        pygame.draw.rect(screen, "green", box,3)
+        pygame.draw.rect(screen, "green", box, 3)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -70,14 +73,6 @@ while run:
                         break
                 player_selected = False
 
-
-
     pygame.display.update()
-    print (player_selected)
-
-    
 
 pygame.quit()
-
-
-# as vezes o player cai no meio 
