@@ -5,9 +5,9 @@ pygame.init()
 
 # Constantes
 
-GRID_SIZE = 7
-BOX_SIZE = 160
-SCREEN_W = SCREEN_H = GRID_SIZE*BOX_SIZE + 150
+GRID_SIZE = 5
+BOX_SIZE = 140
+SCREEN_W = SCREEN_H = GRID_SIZE*BOX_SIZE + 100
 BORDER_OFFSET = (SCREEN_W - GRID_SIZE * BOX_SIZE) // 2
 
 
@@ -33,7 +33,7 @@ player = pygame.Rect(player_box.left + 3,
 # Receiver
 
 receiver_position = SCREEN_W/2
-receiver = pygame.Rect(receiver_position, receiver_position, 154, 154)
+receiver = pygame.Rect(receiver_position, receiver_position, 134, 134)
 
 border = pygame.Rect(BORDER_OFFSET, BORDER_OFFSET, GRID_SIZE * BOX_SIZE, GRID_SIZE * BOX_SIZE)
 
