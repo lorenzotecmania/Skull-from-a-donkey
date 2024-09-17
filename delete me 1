@@ -4,7 +4,7 @@ import random
 pygame.init()
 
 # Constants
-GRID_SIZE = 5
+GRID_SIZE = 3
 
 # Set up fullscreen mode and get screen resolution
 screen_info = pygame.display.Info()
@@ -24,12 +24,6 @@ for i in range(GRID_SIZE):  # Outer loop
         box = pygame.Rect(boxX, boxY, BOX_SIZE, BOX_SIZE)
         boxes.append(box)
 
-# Player
-player_box = random.choice(boxes)
-player = pygame.Rect(player_box.left + 3,
-                     player_box.top + 3,
-                     BOX_SIZE - 6, BOX_SIZE - 6)
-
 # Receiver (spawn in the center square of the grid)
 center_index = GRID_SIZE**2 // 2 
 center_box = boxes[center_index]
@@ -37,7 +31,12 @@ receiver = pygame.Rect(center_box.left + 3,
                        center_box.top + 3,
                        BOX_SIZE - 6, BOX_SIZE - 6)
 
-print (center_index)
+# Player (exclude center box)
+available_boxes = [box for box in boxes if box != center_box]
+player_box = random.choice(available_boxes)
+player = pygame.Rect(player_box.left + 3,
+                     player_box.top + 3,
+                     BOX_SIZE - 6, BOX_SIZE - 6)
 
 # Border
 border = pygame.Rect(BORDER_OFFSET + (SCREEN_W - min(SCREEN_W, SCREEN_H)) // 2,
