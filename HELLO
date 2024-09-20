@@ -5,7 +5,7 @@ pygame.init()
 
 # Constants
 GRID_SIZE = 7
-DIFFICULTY = 47
+DIFFICULTY = 44
 
 # Set up fullscreen mode and get screen resolution
 screen_info = pygame.display.Info()
@@ -90,7 +90,9 @@ while run:
             elif player_selected and border.collidepoint(event.pos):
                 for box in boxes:
                     if box.collidepoint(event.pos):
-                        if box == center_box:
+                        if receiver.colliderect(box):
+                            break
+                        if any(crate.colliderect(box) for crate in crates):
                             break
                         player.center = box.center
                         break
