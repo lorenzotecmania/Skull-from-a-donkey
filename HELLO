@@ -4,7 +4,8 @@ import random
 pygame.init()
 
 # Constants
-GRID_SIZE = 3
+GRID_SIZE = 7
+DIFFICULTY = 47
 
 # Set up fullscreen mode and get screen resolution
 screen_info = pygame.display.Info()
@@ -31,17 +32,33 @@ receiver = pygame.Rect(center_box.left + 3,
                        center_box.top + 3,
                        BOX_SIZE - 6, BOX_SIZE - 6)
 
-# Player (exclude center box)
+
+
+# Player
+
 available_boxes = [box for box in boxes if box != center_box]
+
 player_box = random.choice(available_boxes)
 player = pygame.Rect(player_box.left + 3,
                      player_box.top + 3,
                      BOX_SIZE - 6, BOX_SIZE - 6)
 
+#Crates 
+
+available_boxes = [box for box in boxes if box != center_box and box != player_box]
+
+crates = []
+for h in range(DIFFICULTY):
+    crate_box = random.choice(available_boxes)
+    crate = pygame.Rect(crate_box.left + 3, crate_box.top + 3, BOX_SIZE - 6, BOX_SIZE - 6)
+    crates.append(crate)
+    available_boxes.remove(crate_box)
+
 # Border
 border = pygame.Rect(BORDER_OFFSET + (SCREEN_W - min(SCREEN_W, SCREEN_H)) // 2,
                      BORDER_OFFSET + (SCREEN_H - min(SCREEN_W, SCREEN_H)) // 2,
                      GRID_SIZE * BOX_SIZE, GRID_SIZE * BOX_SIZE)
+
 
 player_selected = False
 run = True
@@ -53,10 +70,14 @@ while run:
     # Draw elements
     pygame.draw.rect(screen, (0, 0, 250), receiver)
     pygame.draw.rect(screen, (250, 0, 0), player)
-    pygame.draw.rect(screen, (0, 250, 0), border, 6)
+
+    for crate in crates:
+        pygame.draw.rect(screen, (50, 150, 90), crate)
 
     for box in boxes:
         pygame.draw.rect(screen, "green", box, 3)
+
+    pygame.draw.rect(screen, (0, 250, 0), border, 6)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -69,6 +90,8 @@ while run:
             elif player_selected and border.collidepoint(event.pos):
                 for box in boxes:
                     if box.collidepoint(event.pos):
+                        if box == center_box:
+                            break
                         player.center = box.center
                         break
                 player_selected = False

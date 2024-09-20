@@ -69,6 +69,8 @@ while run:
             elif player_selected and border.collidepoint(event.pos):
                 for box in boxes:
                     if box.collidepoint(event.pos):
+                        if box == center_box:
+                            break
                         player.center = box.center
                         break
                 player_selected = False
