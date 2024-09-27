@@ -5,7 +5,7 @@ pygame.init()
 
 # Constants
 GRID_SIZE = 7
-DIFFICULTY = 1
+DIFFICULTY = 10
 
 # Set up fullscreen mode and get screen resolution
 screen_info = pygame.display.Info()
@@ -14,6 +14,7 @@ screen = pygame.display.set_mode((SCREEN_W, SCREEN_H), pygame.FULLSCREEN)
 
 # Calculate box size based on screen size
 BOX_SIZE = min(SCREEN_W, SCREEN_H) // (GRID_SIZE + 1)
+BOX_SPACE = BOX_SIZE - 6
 BORDER_OFFSET = (min(SCREEN_W, SCREEN_H) - GRID_SIZE * BOX_SIZE) // 2
 
 # Create boxes (grid)
@@ -28,19 +29,24 @@ for i in range(GRID_SIZE):  # Outer loop
 # Receiver (spawn in the center square of the grid)
 center_index = GRID_SIZE**2 // 2
 center_box = boxes[center_index]
-receiver = pygame.Rect(center_box.left + 3, center_box.top + 3, BOX_SIZE - 6, BOX_SIZE - 6)
+receiver = pygame.Rect(center_box.left + 3, center_box.top + 3, BOX_SPACE, BOX_SPACE)
 
 # Player
 available_boxes = [box for box in boxes if box != center_box]
 player_box = random.choice(available_boxes)
-player = pygame.Rect(player_box.left + 3, player_box.top + 3, BOX_SIZE - 6, BOX_SIZE - 6)
+player = pygame.Rect(player_box.left + 3, player_box.top + 3, BOX_SPACE, BOX_SPACE)
+
+player_sprite = pygame.image.load('player_sprite.png')
+player_sprite = pygame.transform.scale(player_sprite, (BOX_SPACE, BOX_SPACE))
+player_sprite_selected = pygame.image.load('player_sprite_selected.png')
+player_sprite_selected = pygame.transform.scale(player_sprite_selected, (BOX_SPACE, BOX_SPACE))
 
 # Crates
 available_boxes = [box for box in boxes if box != center_box and box != player_box]
 crates = []
-for h in range(GRID_SIZE):
+for h in range(DIFFICULTY):
     crate_box = random.choice(available_boxes)
-    crate = pygame.Rect(crate_box.left + 3, crate_box.top + 3, BOX_SIZE - 6, BOX_SIZE - 6)
+    crate = pygame.Rect(crate_box.left + 3, crate_box.top + 3, BOX_SPACE, BOX_SPACE)
     crates.append(crate)
     available_boxes.remove(crate_box)
 
@@ -50,6 +56,7 @@ border = pygame.Rect(
     BORDER_OFFSET + (SCREEN_H - min(SCREEN_W, SCREEN_H)) // 2,
     GRID_SIZE * BOX_SIZE, GRID_SIZE * BOX_SIZE
 )
+border.inflate_ip(6,6)
 
 player_selected = False
 crate_selected = None
@@ -66,7 +73,7 @@ while run:
 
     # Draw elements
     pygame.draw.rect(screen, (0, 0, 250), receiver)
-    pygame.draw.rect(screen, (250, 0, 0), player)
+
 
     for crate in crates:
         pygame.draw.rect(screen, (50, 150, 90), crate)
@@ -75,6 +82,11 @@ while run:
         pygame.draw.rect(screen, "green", box, 3)
 
     pygame.draw.rect(screen, (0, 250, 0), border, 6)
+
+    if player_selected:
+        screen.blit(player_sprite_selected, (player.x, player.y))
+    else:
+        screen.blit(player_sprite, (player.x, player.y))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

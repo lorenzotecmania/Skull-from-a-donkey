@@ -26,17 +26,27 @@ for i in range(GRID_SIZE):  # Outer loop
         boxes.append(box)
 
 # Receiver (spawn in the center square of the grid)
-center_index = GRID_SIZE**2 // 2
+center_index = GRID_SIZE**2 // 2 
 center_box = boxes[center_index]
-receiver = pygame.Rect(center_box.left + 3, center_box.top + 3, BOX_SIZE - 6, BOX_SIZE - 6)
+receiver = pygame.Rect(center_box.left + 3,
+                       center_box.top + 3,
+                       BOX_SIZE - 6, BOX_SIZE - 6)
+
+
 
 # Player
-available_boxes = [box for box in boxes if box != center_box]
-player_box = random.choice(available_boxes)
-player = pygame.Rect(player_box.left + 3, player_box.top + 3, BOX_SIZE - 6, BOX_SIZE - 6)
 
-# Crates
+available_boxes = [box for box in boxes if box != center_box]
+
+player_box = random.choice(available_boxes)
+player = pygame.Rect(player_box.left + 3,
+                     player_box.top + 3,
+                     BOX_SIZE - 6, BOX_SIZE - 6)
+
+#Crates 
+
 available_boxes = [box for box in boxes if box != center_box and box != player_box]
+
 crates = []
 for h in range(DIFFICULTY):
     crate_box = random.choice(available_boxes)
@@ -45,11 +55,10 @@ for h in range(DIFFICULTY):
     available_boxes.remove(crate_box)
 
 # Border
-border = pygame.Rect(
-    BORDER_OFFSET + (SCREEN_W - min(SCREEN_W, SCREEN_H)) // 2,
-    BORDER_OFFSET + (SCREEN_H - min(SCREEN_W, SCREEN_H)) // 2,
-    GRID_SIZE * BOX_SIZE, GRID_SIZE * BOX_SIZE
-)
+border = pygame.Rect(BORDER_OFFSET + (SCREEN_W - min(SCREEN_W, SCREEN_H)) // 2,
+                     BORDER_OFFSET + (SCREEN_H - min(SCREEN_W, SCREEN_H)) // 2,
+                     GRID_SIZE * BOX_SIZE, GRID_SIZE * BOX_SIZE)
+
 
 player_selected = False
 crate_selected = None
@@ -72,7 +81,7 @@ while run:
         pygame.draw.rect(screen, (50, 150, 90), crate)
 
     for box in boxes:
-        pygame.draw.rect(screen, "green", box, 3)
+        pygame.draw.rect(screen, "green", box, 4)
 
     pygame.draw.rect(screen, (0, 250, 0), border, 6)
 
@@ -82,30 +91,24 @@ while run:
 
         if event.type == pygame.MOUSEBUTTONDOWN:
 
-            # Check if any crate within the 3x3 area is clicked
-            crate_clicked = False
             for crate in crates:
-                if crate.collidepoint(event.pos) and is_within_3x3_area(player, crate):
+                if crate.collidepoint(event.pos) and is_within_3x3_area(player,crate):
                     crate_selected = crate
-                    crate_clicked = True  # Mark that a crate was clicked
 
-            # If no crate was clicked, check for movement
-            if crate_selected and not crate_clicked and border.collidepoint(event.pos):
-                for box in boxes:
-                    if box.collidepoint(event.pos):
-                        if not is_within_3x3_area(player, box):
+                elif crate_selected and border.collidepoint(event.pos):
+                    for box in boxes:
+                        if box.collidepoint(event.pos):
+                            if receiver.colliderect(box):
+                                break
+                            if player.colliderect(box):
+                                break
+                            crate_selected.center = box.center
                             break
-                        if receiver.colliderect(box):
-                            break
-                        if player.colliderect(box):
-                            break
-                        crate_selected.center = box.center
-                        break
-                crate_selected = None
+                    crate_selected = None
 
-            # Handle player movement
             if player.collidepoint(event.pos):
                 player_selected = not player_selected
+                    
 
             elif player_selected and border.collidepoint(event.pos):
                 for box in boxes:
@@ -119,5 +122,8 @@ while run:
                 player_selected = False
 
     pygame.display.update()
+
+            
+    print (crate_selected)
 
 pygame.quit()
