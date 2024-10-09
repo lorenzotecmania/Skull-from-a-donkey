@@ -1,129 +1,33 @@
 import pygame
-import random
 
+# Initialize Pygame
 pygame.init()
 
-# Constants
-GRID_SIZE = 7
-DIFFICULTY = 3
+# Screen setup
+screen = pygame.display.set_mode((800, 600))
+pygame.display.set_caption("Display Text Example")
 
-# Set up fullscreen mode and get screen resolution
-screen_info = pygame.display.Info()
-SCREEN_W, SCREEN_H = screen_info.current_w, screen_info.current_h
-screen = pygame.display.set_mode((SCREEN_W, SCREEN_H), pygame.FULLSCREEN)
+# Set up the font (None means default font, size is 48)
+font = pygame.font.Font(None, 48)
 
-# Calculate box size based on screen size
-BOX_SIZE = min(SCREEN_W, SCREEN_H) // (GRID_SIZE + 1)
-BORDER_OFFSET = (min(SCREEN_W, SCREEN_H) - GRID_SIZE * BOX_SIZE) // 2
+# Render the text (text, anti-aliasing, color)
+text_surface = font.render("Hello, Pygame!", True, (255, 255, 255))  # White text
 
-# Create boxes (grid)
-boxes = []
-for i in range(GRID_SIZE):  # Outer loop
-    for j in range(GRID_SIZE):  # Inner loop
-        boxX = i * BOX_SIZE + BORDER_OFFSET + (SCREEN_W - min(SCREEN_W, SCREEN_H)) // 2
-        boxY = j * BOX_SIZE + BORDER_OFFSET + (SCREEN_H - min(SCREEN_W, SCREEN_H)) // 2
-        box = pygame.Rect(boxX, boxY, BOX_SIZE, BOX_SIZE)
-        boxes.append(box)
-
-# Receiver (spawn in the center square of the grid)
-center_index = GRID_SIZE**2 // 2 
-center_box = boxes[center_index]
-receiver = pygame.Rect(center_box.left + 3,
-                       center_box.top + 3,
-                       BOX_SIZE - 6, BOX_SIZE - 6)
-
-
-
-# Player
-
-available_boxes = [box for box in boxes if box != center_box]
-
-player_box = random.choice(available_boxes)
-player = pygame.Rect(player_box.left + 3,
-                     player_box.top + 3,
-                     BOX_SIZE - 6, BOX_SIZE - 6)
-
-#Crates 
-
-available_boxes = [box for box in boxes if box != center_box and box != player_box]
-
-crates = []
-for h in range(DIFFICULTY):
-    crate_box = random.choice(available_boxes)
-    crate = pygame.Rect(crate_box.left + 3, crate_box.top + 3, BOX_SIZE - 6, BOX_SIZE - 6)
-    crates.append(crate)
-    available_boxes.remove(crate_box)
-
-# Border
-border = pygame.Rect(BORDER_OFFSET + (SCREEN_W - min(SCREEN_W, SCREEN_H)) // 2,
-                     BORDER_OFFSET + (SCREEN_H - min(SCREEN_W, SCREEN_H)) // 2,
-                     GRID_SIZE * BOX_SIZE, GRID_SIZE * BOX_SIZE)
-
-
-player_selected = False
-crate_selected = None
-run = True
-
-def is_within_3x3_area(player_rect, crate_rect):
-    # Check if crate is within a 3x3 area around the player
-    return abs(player_rect.centerx - crate_rect.centerx) <= BOX_SIZE and \
-           abs(player_rect.centery - crate_rect.centery) <= BOX_SIZE
-
-# Event handler
-while run:
-    screen.fill((0, 0, 0))
-
-    # Draw elements
-    pygame.draw.rect(screen, (0, 0, 250), receiver)
-    pygame.draw.rect(screen, (250, 0, 0), player)
-
-    for crate in crates:
-        pygame.draw.rect(screen, (50, 150, 90), crate)
-
-    for box in boxes:
-        pygame.draw.rect(screen, "green", box, 4)
-
-    pygame.draw.rect(screen, (0, 250, 0), border, 6)
-
+# Main loop
+running = True
+while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            run = False
+            running = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
+    # Fill the screen with a background color
+    screen.fill((0, 0, 0))  # Black background
 
-            for crate in crates:
-                if crate.collidepoint(event.pos) and is_within_3x3_area(player,crate):
-                    crate_selected = crate
+    # Blit the text surface onto the screen at position (100, 100)
+    screen.blit(text_surface, (100, 100))
 
-                elif crate_selected and border.collidepoint(event.pos):
-                    for box in boxes:
-                        if box.collidepoint(event.pos):
-                            if receiver.colliderect(box):
-                                break
-                            if player.colliderect(box):
-                                break
-                            crate_selected.center = box.center
-                            break
-                    crate_selected = None
+    # Update the display
+    pygame.display.flip()
 
-            if player.collidepoint(event.pos):
-                player_selected = not player_selected
-                    
-
-            elif player_selected and border.collidepoint(event.pos):
-                for box in boxes:
-                    if box.collidepoint(event.pos):
-                        if receiver.colliderect(box):
-                            break
-                        if any(crate.colliderect(box) for crate in crates):
-                            break
-                        player.center = box.center
-                        break
-                player_selected = False
-
-    pygame.display.update()
-
-            
-    print (crate_selected)
-
+# Quit Pygame
 pygame.quit()

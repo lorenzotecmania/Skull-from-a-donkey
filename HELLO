@@ -4,8 +4,8 @@ import random
 pygame.init()
 
 # Constants
-GRID_SIZE = 7
-DIFFICULTY = 10
+DIFFICULTY = 1
+GRID_SIZE = 3+DIFFICULTY*2
 
 # Set up fullscreen mode and get screen resolution
 screen_info = pygame.display.Info()
