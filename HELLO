@@ -170,6 +170,6 @@ while run:
 
     pygame.display.update()
     text_surface = font.render(str(moves), True, (255, 255, 255))
-    print (moves)
 
 pygame.quit()
+ 
