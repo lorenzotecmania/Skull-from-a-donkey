@@ -4,7 +4,7 @@ import random
 pygame.init()
 
 # Constants
-DIFFICULTY = 1
+DIFFICULTY = 2
 GRID_SIZE = 3+DIFFICULTY*2
 
 # Set up fullscreen mode and get screen resolution
@@ -41,14 +41,33 @@ player_sprite = pygame.transform.scale(player_sprite, (BOX_SPACE, BOX_SPACE))
 player_sprite_selected = pygame.image.load('player_sprite_selected.png')
 player_sprite_selected = pygame.transform.scale(player_sprite_selected, (BOX_SPACE, BOX_SPACE))
 
+crate_sprite = pygame.image.load('crate_sprite.png')
+crate_sprite = pygame.transform.scale(crate_sprite, (BOX_SPACE, BOX_SPACE))
+crate_sprite_selected = pygame.image.load('crate_sprite_selected.png')
+crate_sprite_selected = pygame.transform.scale(crate_sprite_selected, (BOX_SPACE, BOX_SPACE))
+
+blocker_sprite = pygame.image.load('blocker_sprite.png')
+blocker_sprite = pygame.transform.scale(blocker_sprite, (BOX_SPACE, BOX_SPACE))
+
 # Crates
 available_boxes = [box for box in boxes if box != center_box and box != player_box]
+h1 = int(1.5*2**DIFFICULTY)
 crates = []
-for h in range(DIFFICULTY):
+for h in range(h1):
+
     crate_box = random.choice(available_boxes)
     crate = pygame.Rect(crate_box.left + 3, crate_box.top + 3, BOX_SPACE, BOX_SPACE)
     crates.append(crate)
     available_boxes.remove(crate_box)
+
+# Blockers
+available_boxes = [box for box in boxes if box != center_box and box != player_box and box != crates]
+blockers = []
+for h in range(2):
+    blocker_box = random.choice(available_boxes)
+    blocker = pygame.Rect(blocker_box.left + 3, blocker_box.top + 3, BOX_SPACE, BOX_SPACE)
+    blockers.append(blocker)
+    available_boxes.remove(blocker_box)
 
 # Border
 border = pygame.Rect(
@@ -61,6 +80,10 @@ border.inflate_ip(6,6)
 player_selected = False
 crate_selected = None
 run = True
+moves = 0
+
+font = pygame.font.Font(None, 48)
+text_surface = font.render(str(moves), True, (255, 255, 255))
 
 def is_within_3x3_area(player_rect, crate_rect):
     # Check if crate is within a 3x3 area around the player
@@ -70,13 +93,21 @@ def is_within_3x3_area(player_rect, crate_rect):
 # Event handler
 while run:
     screen.fill((0, 0, 0))
+    screen.blit(text_surface, (100, 100))
 
     # Draw elements
     pygame.draw.rect(screen, (0, 0, 250), receiver)
 
 
     for crate in crates:
-        pygame.draw.rect(screen, (50, 150, 90), crate)
+        if crate_selected:
+            screen.blit(crate_sprite, (crate.x, crate.y))
+            screen.blit(crate_sprite_selected, (crate_selected.x, crate_selected.y))
+        else:
+           screen.blit(crate_sprite, (crate.x, crate.y))
+
+    for blocker in blockers:
+        screen.blit(blocker_sprite, (blocker.x, blocker.y))
 
     for box in boxes:
         pygame.draw.rect(screen, "green", box, 3)
@@ -87,6 +118,10 @@ while run:
         screen.blit(player_sprite_selected, (player.x, player.y))
     else:
         screen.blit(player_sprite, (player.x, player.y))
+
+    if h1 == 0:
+        run = False
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -107,11 +142,13 @@ while run:
                     if box.collidepoint(event.pos):
                         if not is_within_3x3_area(player, box):
                             break
-                        if receiver.colliderect(box):
-                            break
                         if player.colliderect(box):
                             break
+                        if receiver.colliderect(box):
+                            crates.remove(crate_selected)
+                            h1=h1-1
                         crate_selected.center = box.center
+                        moves=moves+1
                         break
                 crate_selected = None
 
@@ -127,9 +164,12 @@ while run:
                         if any(crate.colliderect(box) for crate in crates):
                             break
                         player.center = box.center
+                        moves=moves+1
                         break
                 player_selected = False
 
     pygame.display.update()
+    text_surface = font.render(str(moves), True, (255, 255, 255))
+    print (moves)
 
 pygame.quit()

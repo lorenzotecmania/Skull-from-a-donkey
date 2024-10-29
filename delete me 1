@@ -12,6 +12,10 @@ screen_info = pygame.display.Info()
 SCREEN_W, SCREEN_H = screen_info.current_w, screen_info.current_h
 screen = pygame.display.set_mode((SCREEN_W, SCREEN_H), pygame.FULLSCREEN)
 
+# Set up text display
+font = pygame.font.Font(None, 48)
+text_surface = font.render("YOU WON!", True, (255, 255, 255))
+
 # Calculate box size based on screen size
 BOX_SIZE = min(SCREEN_W, SCREEN_H) // (GRID_SIZE + 1)
 BOX_SPACE = BOX_SIZE - 6
@@ -40,6 +44,11 @@ player_sprite = pygame.image.load('player_sprite.png')
 player_sprite = pygame.transform.scale(player_sprite, (BOX_SPACE, BOX_SPACE))
 player_sprite_selected = pygame.image.load('player_sprite_selected.png')
 player_sprite_selected = pygame.transform.scale(player_sprite_selected, (BOX_SPACE, BOX_SPACE))
+
+crate_sprite = pygame.image.load('crate_sprite.png')
+crate_sprite = pygame.transform.scale(crate_sprite, (BOX_SPACE, BOX_SPACE))
+crate_sprite_selected = pygame.image.load('player_sprite_selected.png')
+crate_sprite_selected = pygame.transform.scale(player_sprite_selected, (BOX_SPACE, BOX_SPACE))
 
 # Crates
 available_boxes = [box for box in boxes if box != center_box and box != player_box]
@@ -134,7 +143,7 @@ while run:
                 player_selected = not player_selected
 
             elif player_selected and border.collidepoint(event.pos):
-                for box in boxes:
+                for box in boxes:       
                     if box.collidepoint(event.pos):
                         if receiver.colliderect(box):
                             break
@@ -143,6 +152,8 @@ while run:
                         player.center = box.center
                         break
                 player_selected = False
+    if not crates:
+        screen.blit(text_surface, (100, 100))
 
     pygame.display.update()
 
