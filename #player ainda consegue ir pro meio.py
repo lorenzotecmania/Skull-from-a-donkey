@@ -1,6 +1,8 @@
-""" 
-nao há formula pra o spawn de caixas
-caixas spawnam diretamente ao lado do receiver
+boy
+oq
+falta
 
-n dá pra saber se uma caixa está selecionada ou n
-n dá pra saber se o player está selecionado
+
+COUNTER NAO RESETA  resolvido
+MOVEcounter NAO TAO A FUNCIONAR resolvido
+é possivel por crates ficam atras dos blockers,  resolvido

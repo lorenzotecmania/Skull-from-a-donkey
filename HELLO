@@ -58,30 +58,6 @@ center_index = GRID_SIZE**2 // 2
 center_box = boxes[center_index]
 receiver = pygame.Rect(center_box.left + 3, center_box.top + 3, BOX_SPACE, BOX_SPACE)
 
-# Player
-available_boxes = [box for box in boxes if box != center_box]
-player_box = random.choice(available_boxes)
-player = pygame.Rect(player_box.left + 3, player_box.top + 3, BOX_SPACE, BOX_SPACE)
-
-# Crates
-available_boxes = [box for box in boxes if box != center_box and box != player_box]
-h1 = int(1.5*2**DIFFICULTY)
-crates = []
-for h in range(h1):
-
-    crate_box = random.choice(available_boxes)
-    crate = pygame.Rect(crate_box.left + 3, crate_box.top + 3, BOX_SPACE, BOX_SPACE)
-    crates.append(crate)
-    available_boxes.remove(crate_box)
-
-
-blockers = []
-for h in range(h1):
-    blocker_box = random.choice(available_boxes)
-    blocker = pygame.Rect(blocker_box.left + 3, blocker_box.top + 3, BOX_SPACE, BOX_SPACE)
-    blockers.append(blocker)
-    available_boxes.remove(blocker_box)
-
 #Butoons
 button = pygame.Rect(center_box.left - BOX_SPACE,center_box.top, BOX_SPACE, BOX_SPACE)
 start_button= pygame.Rect(center_box.left - BOX_SPACE,center_box.top,2*BOX_SPACE,2*BOX_SPACE)
@@ -90,15 +66,13 @@ start_button= pygame.Rect(center_box.left - BOX_SPACE,center_box.top,2*BOX_SPACE
 player_selected = False
 crate_selected = None
 run = True
-state = 'intro'
+state = 'reset'
 moves = 0
 
 font = pygame.font.Font(None, 48)
-move_counter = font.render(str(moves), True, (255, 255, 255))
 intro_message = font.render("A demo based in ST4CK PUSHER from WTTG2", True, (255,255,255))
 
 def is_within_3x3_area(player_rect, crate_rect):
-    # Check if crate is within a 3x3 area around the player
     return abs(player_rect.centerx - crate_rect.centerx) <= BOX_SIZE and \
            abs(player_rect.centery - crate_rect.centery) <= BOX_SIZE
 
@@ -116,8 +90,6 @@ while run:
 
 
     if state == 'game':
-        screen.blit(move_counter, (100, 100))
-
         # Draw elements
         pygame.draw.rect(screen, (0, 0, 250), receiver)
 
@@ -153,7 +125,7 @@ while run:
                 # Check if any crate within the 3x3 area is clicked
                 crate_clicked = False
                 for crate in crates:
-                    if crate.collidepoint(event.pos) and is_within_3x3_area(player, crate):
+                    if crate.collidepoint(event.pos) and is_within_3x3_area(player, crate) and player_selected == False and crate_selected == None:
                         crate_selected = crate
                         crate_clicked = True  # Mark that a crate was clicked
 
@@ -164,6 +136,10 @@ while run:
                             if not is_within_3x3_area(player, box):
                                 break
                             if player.colliderect(box):
+                                break
+                            if any(blocker.colliderect(box) for blocker in blockers):
+                                break
+                            if any(crate.colliderect(box) for crate in crates):
                                 break
                             if receiver.colliderect(box):
                                 crates.remove(crate_selected)
@@ -185,20 +161,16 @@ while run:
                                 break
                             if any(crate.colliderect(box) for crate in crates):
                                 break
+                            if any(blocker.colliderect(box) for blocker in blockers):
+                                break
                             player.center = box.center
                             moves=moves+1
                             break
                     player_selected = False
-        #COUNTER
-        if moves == 0: start_ticks = pygame.time.get_ticks()
 
-        seconds = (pygame.time.get_ticks() - start_ticks) / 1000 # convert to seconds
-        time_left = float(seconds)
-        pygame.time.Clock().tick(60)
-        timer_text = font.render(f"{time_left}", True, (255, 255, 255))
         screen.blit(timer_text, (100, 200))
-
-        text_surface = font.render(str(moves), True, (255, 255, 255))
+        move_counter = font.render(str(moves), True, (255, 255, 255))
+        screen.blit(move_counter, (100,100))
         
 
     if state == 'won':
@@ -207,15 +179,46 @@ while run:
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if button.collidepoint(event.pos):
-                    state == 'reset'
-                if event.type == pygame.QUIT:
+                    state = 'reset'
+            if event.type == pygame.QUIT:
                     run = False
-        pygame.time.Clock().tick(60)
 
     if state == 'reset':
-        state == ''
+
+        available_boxes = [box for box in boxes if box != center_box]
+        player_box = random.choice(available_boxes)
+        player = pygame.Rect(player_box.left + 3, player_box.top + 3, BOX_SPACE, BOX_SPACE)
+
+        # Crates
+        available_boxes = [box for box in boxes if box != center_box and box != player_box]
+        h1 = int(1.5*2**DIFFICULTY)
+        crates = []
+        for h in range(h1):
+
+            crate_box = random.choice(available_boxes)
+            crate = pygame.Rect(crate_box.left + 3, crate_box.top + 3, BOX_SPACE, BOX_SPACE)
+            crates.append(crate)
+            available_boxes.remove(crate_box)
 
 
+        blockers = []
+        for h in range(h1):
+            blocker_box = random.choice(available_boxes)
+            blocker = pygame.Rect(blocker_box.left + 3, blocker_box.top + 3, BOX_SPACE, BOX_SPACE)
+            blockers.append(blocker)
+            available_boxes.remove(blocker_box)
+        
+        moves = 0
+
+        state = 'intro'
+
+
+    #COUNTER
+    if moves == 0: start_ticks = pygame.time.get_ticks()
+    seconds = (pygame.time.get_ticks() - start_ticks) / 1000 # convert to seconds
+    time_left = float(seconds)
+    timer_text = font.render(f"{time_left}", True, (255, 255, 255))
     pygame.display.update()
+    pygame.time.Clock().tick(60)
 
 pygame.quit()
