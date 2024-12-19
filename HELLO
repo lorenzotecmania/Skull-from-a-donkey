@@ -87,6 +87,8 @@ while run:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if start_button.collidepoint(event.pos):
                     state='game'
+            if event.type == pygame.QUIT:
+                    run = False
 
 
     if state == 'game':
