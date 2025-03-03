@@ -1,0 +1,23 @@
+Pyinstaller should work. make sure you did it correctly. The right way is as follows:
+
+windows key + r
+
+type cmd
+
+type pip install pyinstaller
+
+close command prompt and open library
+
+go to your project
+
+highlight the path displayed at the top and change it to cmd
+
+press enter; command prompt should open up
+
+type pyinstaller --onefile -w [name of file].py
+
+wait for it to finish
+
+you can delete any newly made files and folders that weren't there originally
+
+Make sure python is in your PATH. If this doesn't help, sorry I'm beat.

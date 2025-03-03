@@ -18,6 +18,14 @@ def loadscale(file_path, size):
     image = pygame.image.load(file_path)
     return pygame.transform.scale(image, (size,size))
 
+def update_score_file(file_name, score_name, score_time):
+    with open(file_name, "r+") as file:
+        content = file.readlines()
+        file.seek(0)
+        file.write(f"{score_name}-{score_time}\n")
+        file.writelines(content)
+        file.truncate()
+
 
 pygame.mixer.init()
 click_sound = pygame.mixer.Sound("click.wav")
@@ -55,6 +63,8 @@ while run:
             screen.blit(third_button_sprite,(third_button.x,third_button.y))
 
         screen.blit(intro_message, (130, 100))
+        #screen.blit(difficulty_sprite,(difficulty.x,difficulty.y))
+
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if start_button.collidepoint(event.pos):
@@ -183,7 +193,11 @@ while run:
         score_name = get_user_input()
         score_time = str(time_left)
 
-        with open("abc.txt", "r+") as file:
+        if DIFFICULTY == 1: a="1.txt"
+        if DIFFICULTY == 2: a="2.txt"
+        if DIFFICULTY == 3: a="3.txt"
+
+        with open(a, "r+") as file:
             content = file.read().strip()
             new_content = score_name + "-" + score_time + "\n" + content
             file.seek(0)
@@ -235,6 +249,7 @@ while run:
         first_button_sprite_selected = loadscale('1_selected.png', SMOL_BOX)
         second_button_sprite_selected = loadscale('2_selected.png', SMOL_BOX)
         third_button_sprite_selected = loadscale('3_selected.png', SMOL_BOX)
+        #difficulty_sprite = loadscale("difficulty_sprite.png", SMOL_BOX)
 
 
                 # Border
@@ -262,7 +277,7 @@ while run:
         #Butoons
         button = pygame.Rect(center_box.left - BOX_SPACE,center_box.top, BOX_SPACE, BOX_SPACE)
         start_button= pygame.Rect(center_box.left - BOX_SPACE,center_box.top,2*BOX_SPACE,2*BOX_SPACE)
-        difficulty_button = pygame.Rect(BOX_SPACE,center_box.top- BOX_SPACE, BOX_SPACE, BOX_SPACE)
+        #difficulty = pygame.Rect(BOX_SPACE,center_box.top- BOX_SPACE, SMOL_BOX, SMOL_BOX)
         first_button = pygame.Rect(center_box.left - 4*BOX_SPACE,center_box.top- BOX_SPACE, SMOL_BOX, SMOL_BOX)
         second_button = pygame.Rect(center_box.left - 3*BOX_SPACE,center_box.top- BOX_SPACE, SMOL_BOX, SMOL_BOX)
         third_button= pygame.Rect(center_box.left - 2*BOX_SPACE,center_box.top - BOX_SPACE, SMOL_BOX, SMOL_BOX)
