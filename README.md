@@ -12,9 +12,8 @@ To run:
 2. Extract everything to a folder
 3. Run exe
 
-Features for 0.2-demo:
+Features for 0.3-demo:
 
--difficulty adjuster
--score leaderboard
+-UI improvements
 
 
