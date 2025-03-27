@@ -1,22 +1,20 @@
 import pygame
 import random
 
+#32x
+
 pygame.init()
 
-# Constants
 DIFFICULTY = 2
 
-# Set up fullscreen mode and get screen resolution
 screen_info = pygame.display.Info()
-SCREEN_W, SCREEN_H = screen_info.current_w, screen_info.current_h
-screen = pygame.display.set_mode((SCREEN_W, SCREEN_H), pygame.FULLSCREEN)
+#S_W, S_H = screen_info.current_w, screen_info.current_h
+S_W, S_H = (screen_info.current_w/100)*55, (screen_info.current_h/100)*55
+screen = pygame.display.set_mode((S_W, S_H),)
 
-# SPRITES
-
-def loadscale(file_path, size):
-    """Loads an image and scales it to the specified size."""
+def loadscale(file_path, size1, size2):
     image = pygame.image.load(file_path)
-    return pygame.transform.scale(image, (size,size))
+    return pygame.transform.scale(image, (size1,size2))
 
 def update_score_file(file_name, score_name, score_time):
     with open(file_name, "r+") as file:
@@ -26,6 +24,9 @@ def update_score_file(file_name, score_name, score_time):
         file.writelines(content)
         file.truncate()
 
+def is_within_3x3_area(player_rect, crate_rect):
+    return abs(player_rect.centerx - crate_rect.centerx) <= BOX_SIZE and \
+           abs(player_rect.centery - crate_rect.centery) <= BOX_SIZE
 
 pygame.mixer.init()
 click_sound = pygame.mixer.Sound("click.wav")
@@ -36,19 +37,15 @@ crate_selected = None
 run = True
 state = 'reset'
 
-font = pygame.font.Font(None, 48)
+font_size = int(S_W*(6/167))
+font = pygame.font.Font(None, font_size)
 intro_message = font.render("A demo based in ST4CK PUSHER from WTTG2", True, (255,255,255))
-
-def is_within_3x3_area(player_rect, crate_rect):
-    return abs(player_rect.centerx - crate_rect.centerx) <= BOX_SIZE and \
-           abs(player_rect.centery - crate_rect.centery) <= BOX_SIZE
-
-
 
 while run:
 
     if state == 'intro':
         screen.blit(start_button_sprite,(start_button.x,start_button.y))
+        screen.blit(settings_button_sprite,(settings_button.x,settings_button.y))
         if DIFFICULTY == 1:
             screen.blit(first_button_sprite_selected,(first_button.x,first_button.y))
         else:
@@ -62,13 +59,15 @@ while run:
         else:
             screen.blit(third_button_sprite,(third_button.x,third_button.y))
 
-        screen.blit(intro_message, (130, 100))
-        #screen.blit(difficulty_sprite,(difficulty.x,difficulty.y))
+        screen.blit(intro_message, (SMOL_BOX,SMOL_BOX))
+        screen.blit(difficulty_sprite,(difficulty_label.x,difficulty_label.y))
 
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if start_button.collidepoint(event.pos):
                     state='game'
+                if settings_button.collidepoint(event.pos):
+                    state='settings'
                 if first_button.collidepoint(event.pos):
                     DIFFICULTY=1
                     state='reset'
@@ -83,9 +82,7 @@ while run:
                     run = False
 
     if state == 'game':
-        # Draw elements
         pygame.draw.rect(screen, (0, 0, 250), receiver)
-
 
         for crate in crates:
             if crate_selected:
@@ -115,14 +112,12 @@ while run:
 
             if event.type == pygame.MOUSEBUTTONDOWN:
 
-                # Check if any crate within the 3x3 area is clicked
                 crate_clicked = False
                 for crate in crates:
                     if crate.collidepoint(event.pos) and is_within_3x3_area(player, crate) and player_selected == False and crate_selected == None:
                         crate_selected = crate
-                        crate_clicked = True  # Mark that a crate was clicked
+                        crate_clicked = True
 
-                # If no crate was clicked, check for movement
                 if crate_selected and not crate_clicked and border.collidepoint(event.pos):
                     for box in boxes:
                         if box.collidepoint(event.pos):
@@ -143,7 +138,6 @@ while run:
                             break
                     crate_selected = None
 
-                # Handle player movement
                 if player.collidepoint(event.pos):
                     player_selected = not player_selected
 
@@ -161,10 +155,34 @@ while run:
                             break
                     player_selected = False
 
-        screen.blit(timer_text, (100, 200))
+        screen.blit(timer_text, (SMOL_BOX, 2*SMOL_BOX))
         move_counter = font.render(str(moves), True, (255, 255, 255))
-        screen.blit(move_counter, (100,100))
-        
+        screen.blit(move_counter, (SMOL_BOX,SMOL_BOX))
+
+    if state == 'settings':
+
+
+        cg=slider_thing.x-1.03*SMOL_BOX
+        slider_percentage = font.render(str(cg), True, (255,255,255))
+
+
+        screen.blit(slider_sprite,(slider.x,slider.y))
+        screen.blit(slider_thing_sprite,(slider_thing.x,slider_thing.y))
+        screen.blit(back_button_sprite,(back_button.x,back_button.y))
+        screen.blit(slider_percentage, (SMOL_BOX,SMOL_BOX))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                    run = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if back_button.collidepoint(event.pos):
+                    state = 'reset'
+        if any(pygame.mouse.get_pressed()):
+            if 1.03*SMOL_BOX < pygame.mouse.get_pos()[0] < 5.35*BOX_SPACE:
+                slider_thing.x = pygame.mouse.get_pos() [0]
+
+
+
     if state == 'won':
 
         def get_user_input():
@@ -192,6 +210,7 @@ while run:
 
         score_name = get_user_input()
         score_time = str(time_left)
+        score_moves = str(moves)
 
         if DIFFICULTY == 1: a="1.txt"
         if DIFFICULTY == 2: a="2.txt"
@@ -199,7 +218,7 @@ while run:
 
         with open(a, "r+") as file:
             content = file.read().strip()
-            new_content = score_name + "-" + score_time + "\n" + content
+            new_content = content + "\n" + score_name + "-" + score_time + "  " + score_moves
             file.seek(0)
             file.write(new_content)
             file.truncate()
@@ -229,65 +248,70 @@ while run:
 
         GRID_SIZE = 3+DIFFICULTY*2
 
-        # Calculate box size based on screen size
-        BOX_SIZE = min(SCREEN_W, SCREEN_H) // (GRID_SIZE + 1)
+        BOX_SIZE = min(S_W, S_H) // (GRID_SIZE + 1)
         BOX_SPACE = BOX_SIZE - 6
-        BORDER_OFFSET = (min(SCREEN_W, SCREEN_H) - GRID_SIZE * BOX_SIZE) // 2
+        BORDER_OFFSET = (min(S_W, S_H) - GRID_SIZE * BOX_SIZE) // 2
 
         SMOL_BOX = BOX_SPACE*(2/3)
 
-        player_sprite = loadscale('player_sprite.png', BOX_SPACE)
-        player_sprite_selected = loadscale('player_sprite_selected.png', BOX_SPACE)
-        crate_sprite = loadscale('crate_sprite.png', BOX_SPACE)
-        crate_sprite_selected = loadscale('crate_sprite_selected.png', BOX_SPACE)
-        blocker_sprite = loadscale('blocker_sprite.png', BOX_SPACE)
-        button_sprite = loadscale('button_sprite.png', BOX_SPACE)
-        start_button_sprite = loadscale('start_button_sprite.png', 2*BOX_SPACE)
-        first_button_sprite = loadscale('1.png', SMOL_BOX)
-        second_button_sprite = loadscale('2.png', SMOL_BOX)
-        third_button_sprite = loadscale('3.png', SMOL_BOX)
-        first_button_sprite_selected = loadscale('1_selected.png', SMOL_BOX)
-        second_button_sprite_selected = loadscale('2_selected.png', SMOL_BOX)
-        third_button_sprite_selected = loadscale('3_selected.png', SMOL_BOX)
-        #difficulty_sprite = loadscale("difficulty_sprite.png", SMOL_BOX)
+        player_sprite = loadscale('player_sprite.png', BOX_SPACE, BOX_SPACE)
+        player_sprite_selected = loadscale('player_sprite_selected.png', BOX_SPACE, BOX_SPACE)
+        crate_sprite = loadscale('crate_sprite.png', BOX_SPACE, BOX_SPACE)
+        crate_sprite_selected = loadscale('crate_sprite_selected.png', BOX_SPACE, BOX_SPACE)
+        blocker_sprite = loadscale('blocker_sprite.png', BOX_SPACE, BOX_SPACE)
+        button_sprite = loadscale('button_sprite.png', BOX_SPACE, BOX_SPACE)
+        start_button_sprite = loadscale('start_button_sprite.png', 2*BOX_SPACE, 0.6*BOX_SPACE)
+        first_button_sprite = loadscale('1.png', SMOL_BOX, SMOL_BOX)
+        second_button_sprite = loadscale('2.png', SMOL_BOX, SMOL_BOX)
+        third_button_sprite = loadscale('3.png', SMOL_BOX, SMOL_BOX)
+        first_button_sprite_selected = loadscale('1_selected.png', SMOL_BOX, SMOL_BOX)
+        second_button_sprite_selected = loadscale('2_selected.png', SMOL_BOX, SMOL_BOX)
+        third_button_sprite_selected = loadscale('3_selected.png', SMOL_BOX, SMOL_BOX)
+        difficulty_sprite = loadscale("difficulty_sprite.png", 4*SMOL_BOX,SMOL_BOX)
+        settings_button_sprite = loadscale("settings.png",BOX_SPACE,BOX_SPACE)
+        back_button_sprite = loadscale("back_button_sprite.png",2*BOX_SPACE,0.6*BOX_SPACE)
+        slider_sprite = loadscale ("green_square.png",5*BOX_SPACE,SMOL_BOX/2)
+        slider_thing_sprite = loadscale ("black_square.png",SMOL_BOX/2.3,SMOL_BOX/2.3)
 
 
-                # Border
         border = pygame.Rect(
-            BORDER_OFFSET + (SCREEN_W - min(SCREEN_W, SCREEN_H)) // 2,
-            BORDER_OFFSET + (SCREEN_H - min(SCREEN_W, SCREEN_H)) // 2,
+            BORDER_OFFSET + (S_W - min(S_W, S_H)) // 2,
+            BORDER_OFFSET + (S_H - min(S_W, S_H)) // 2,
             GRID_SIZE * BOX_SIZE, GRID_SIZE * BOX_SIZE
         )
         border.inflate_ip(6,6)
 
-        # Create boxes (grid)
         boxes = []
         for i in range(GRID_SIZE):  # Outer loop
             for j in range(GRID_SIZE):  # Inner loop
-                boxX = i * BOX_SIZE + BORDER_OFFSET + (SCREEN_W - min(SCREEN_W, SCREEN_H)) // 2
-                boxY = j * BOX_SIZE + BORDER_OFFSET + (SCREEN_H - min(SCREEN_W, SCREEN_H)) // 2
+                boxX = i * BOX_SIZE + BORDER_OFFSET + (S_W - min(S_W, S_H)) // 2
+                boxY = j * BOX_SIZE + BORDER_OFFSET + (S_H - min(S_W, S_H)) // 2
                 box = pygame.Rect(boxX, boxY, BOX_SIZE, BOX_SIZE)
                 boxes.append(box)
 
-        # Receiver (spawn in the center square of the grid)
         center_index = GRID_SIZE**2 // 2
         center_box = boxes[center_index]
         receiver = pygame.Rect(center_box.left + 3, center_box.top + 3, BOX_SPACE, BOX_SPACE)
 
-        #Butoons
+        #INTRO
+        start_button= pygame.Rect((S_W//2)-BOX_SPACE,(S_H//2)-0.3*BOX_SPACE,2*BOX_SPACE,0.6*BOX_SPACE)
+        settings_button = pygame.Rect(S_W - 2*BOX_SPACE,S_H - 2*BOX_SPACE,BOX_SPACE,BOX_SPACE)
+        difficulty_label = pygame.Rect(SMOL_BOX,1.5*BOX_SPACE, 4*SMOL_BOX, SMOL_BOX)
+        first_button = pygame.Rect(4*BOX_SPACE,1.5*BOX_SPACE, SMOL_BOX, SMOL_BOX)
+        second_button = pygame.Rect(5*BOX_SPACE,1.5*BOX_SPACE, SMOL_BOX, SMOL_BOX)
+        third_button= pygame.Rect(6*BOX_SPACE,1.5*BOX_SPACE, SMOL_BOX, SMOL_BOX)
+        #SETTINGS
+        back_button = pygame.Rect(BOX_SPACE,S_H-2*BOX_SPACE,2*BOX_SPACE,0.6*BOX_SPACE)
+        slider = pygame.Rect(SMOL_BOX,1.5*BOX_SPACE,5*BOX_SPACE,SMOL_BOX/2)
+        slider_thing = pygame.Rect(1.04*SMOL_BOX,1.525*BOX_SPACE,SMOL_BOX/2.3,SMOL_BOX/2.3)
+        #SCORE
         button = pygame.Rect(center_box.left - BOX_SPACE,center_box.top, BOX_SPACE, BOX_SPACE)
-        start_button= pygame.Rect(center_box.left - BOX_SPACE,center_box.top,2*BOX_SPACE,2*BOX_SPACE)
-        #difficulty = pygame.Rect(BOX_SPACE,center_box.top- BOX_SPACE, SMOL_BOX, SMOL_BOX)
-        first_button = pygame.Rect(center_box.left - 4*BOX_SPACE,center_box.top- BOX_SPACE, SMOL_BOX, SMOL_BOX)
-        second_button = pygame.Rect(center_box.left - 3*BOX_SPACE,center_box.top- BOX_SPACE, SMOL_BOX, SMOL_BOX)
-        third_button= pygame.Rect(center_box.left - 2*BOX_SPACE,center_box.top - BOX_SPACE, SMOL_BOX, SMOL_BOX)
 
         
         available_boxes = [box for box in boxes if box != center_box]
         player_box = random.choice(available_boxes)
         player = pygame.Rect(player_box.left + 3, player_box.top + 3, BOX_SPACE, BOX_SPACE)
 
-        # Crates
         available_boxes = [box for box in boxes if box != center_box and box != player_box]
         h1 = int(1.5*2**DIFFICULTY)
         crates = []
@@ -307,11 +331,9 @@ while run:
             available_boxes.remove(blocker_box)
         
         moves = 0
-
         state = 'intro'
 
 
-    #COUNTER
     if moves == 0: start_ticks = pygame.time.get_ticks()
     seconds = (pygame.time.get_ticks() - start_ticks) / 1000 # convert to seconds
     time_left = float(seconds)
