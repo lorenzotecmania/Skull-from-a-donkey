@@ -8,8 +8,8 @@ pygame.init()
 DIFFICULTY = 2
 
 screen_info = pygame.display.Info()
-#S_W, S_H = screen_info.current_w, screen_info.current_h
-S_W, S_H = (screen_info.current_w/100)*55, (screen_info.current_h/100)*55
+S_W, S_H = screen_info.current_w, screen_info.current_h
+#S_W, S_H = (screen_info.current_w/100)*55, (screen_info.current_h/100)*55
 screen = pygame.display.set_mode((S_W, S_H),)
 
 def loadscale(file_path, size1, size2):
