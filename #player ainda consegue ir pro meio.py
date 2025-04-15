@@ -28,7 +28,23 @@ UI + config menu +  ---» 0.3 ON DELETE ME 3 copia
 - criar o novo state (butao de volta) DONE
 -melhorar leaderboard DONE
 criar slider DONE
-faz um 0 a 100 %
+faz um 0 a 100 % to dos 
+
+now what? how did we get here?
+
+0.4
+working volume adjuster:
+-right thing position DONE
+-right value being displayed DONE
+-adjusting the actual volume TO DO
+-label
+new sound effects:
+fail attempt at movement
+selecting and unselecttin suddle 
+top time presenting at the right part of the score menu
+maybe existing names for other attempts like BOB LOU
+
+
 
 
 

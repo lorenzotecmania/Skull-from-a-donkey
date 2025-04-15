@@ -12,8 +12,13 @@ To run:
 2. Extract everything to a folder
 3. Run exe
 
-Features for 0.3-demo:
+Features for 0.4-demo:
 
--UI improvements
+acess to leaderboards from main menu
+tutorial
+option to skip score saving
+volume adjuster
+new sound effects
+
 
 

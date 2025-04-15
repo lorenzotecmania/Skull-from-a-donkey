@@ -162,7 +162,7 @@ while run:
     if state == 'settings':
 
 
-        cg=slider_thing.x-1.03*SMOL_BOX
+        cg=int(slider_thing.x-1.03*SMOL_BOX)
         slider_percentage = font.render(str(cg), True, (255,255,255))
 
 
@@ -180,8 +180,6 @@ while run:
         if any(pygame.mouse.get_pressed()):
             if 1.03*SMOL_BOX < pygame.mouse.get_pos()[0] < 5.35*BOX_SPACE:
                 slider_thing.x = pygame.mouse.get_pos() [0]
-
-
 
     if state == 'won':
 

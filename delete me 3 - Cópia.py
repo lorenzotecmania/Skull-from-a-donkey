@@ -30,7 +30,7 @@ def is_within_3x3_area(player_rect, crate_rect):
 
 pygame.mixer.init()
 click_sound = pygame.mixer.Sound("click.wav")
-click_sound.play()
+click_sound.set_volume(1)
 
 player_selected = False
 crate_selected = None
@@ -160,11 +160,14 @@ while run:
         screen.blit(move_counter, (SMOL_BOX,SMOL_BOX))
 
     if state == 'settings':
+        
 
-
-        cg=slider_thing.x-1.03*SMOL_BOX
-        slider_percentage = font.render(str(cg), True, (255,255,255))
-
+        cg=int(slider_thing.x-1.03*SMOL_BOX)
+        cg1=(4.18/60)*SMOL_BOX
+        cg2=int(cg/cg1)
+        slider_percentage = font.render("Volume "+str(cg2), True, (255,255,255))
+        #cg3 = (int(cg2/10))/10
+        #print (pygame.mixer.music.get_volume())
 
         screen.blit(slider_sprite,(slider.x,slider.y))
         screen.blit(slider_thing_sprite,(slider_thing.x,slider_thing.y))
@@ -177,10 +180,17 @@ while run:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if back_button.collidepoint(event.pos):
                     state = 'reset'
-        if any(pygame.mouse.get_pressed()):
-            if 1.03*SMOL_BOX < pygame.mouse.get_pos()[0] < 5.35*BOX_SPACE:
-                slider_thing.x = pygame.mouse.get_pos() [0]
+            if any(pygame.mouse.get_pressed()) and slider.collidepoint(pygame.mouse.get_pos()):
 
+                slider_thing.x = pygame.mouse.get_pos() [0] - SMOL_BOX/4.6
+                click_sound.set_volume(0.5)
+                click_sound.play()
+
+                if 1.25*SMOL_BOX > pygame.mouse.get_pos()[0]:
+                    slider_thing.x = 1.03*SMOL_BOX
+                if pygame.mouse.get_pos()[0] > 5.40*BOX_SPACE:
+                    slider_thing.x = 5.35*BOX_SPACE
+            
 
 
     if state == 'won':
@@ -248,6 +258,8 @@ while run:
 
         GRID_SIZE = 3+DIFFICULTY*2
 
+        pygame.mixer.music.set_volume = 1
+
         BOX_SIZE = min(S_W, S_H) // (GRID_SIZE + 1)
         BOX_SPACE = BOX_SIZE - 6
         BORDER_OFFSET = (min(S_W, S_H) - GRID_SIZE * BOX_SIZE) // 2
@@ -302,8 +314,8 @@ while run:
         third_button= pygame.Rect(6*BOX_SPACE,1.5*BOX_SPACE, SMOL_BOX, SMOL_BOX)
         #SETTINGS
         back_button = pygame.Rect(BOX_SPACE,S_H-2*BOX_SPACE,2*BOX_SPACE,0.6*BOX_SPACE)
-        slider = pygame.Rect(SMOL_BOX,1.5*BOX_SPACE,5*BOX_SPACE,SMOL_BOX/2)
-        slider_thing = pygame.Rect(1.04*SMOL_BOX,1.525*BOX_SPACE,SMOL_BOX/2.3,SMOL_BOX/2.3)
+        slider = pygame.Rect(SMOL_BOX,1.5*BOX_SPACE,5*BOX_SPACE,SMOL_BOX/1.7)
+        slider_thing = pygame.Rect(1.04*SMOL_BOX,1.525*BOX_SPACE,SMOL_BOX/1.8,SMOL_BOX/1.8)
         #SCORE
         button = pygame.Rect(center_box.left - BOX_SPACE,center_box.top, BOX_SPACE, BOX_SPACE)
 
@@ -330,8 +342,10 @@ while run:
             blockers.append(blocker)
             available_boxes.remove(blocker_box)
         
+        click_sound.play()
         moves = 0
         state = 'intro'
+
 
 
     if moves == 0: start_ticks = pygame.time.get_ticks()
