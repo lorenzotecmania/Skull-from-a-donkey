@@ -1,0 +1,96 @@
+tabela de score:
+1-input do user DONE
+2-salvo desse input DONE
+3- Tempo adicionado ao input DONE
+4 apenas caps lock DONE
+5- organização por melhor tempo TO DO
+
+Dificulty:
+1-fazer sprites DONE
+2-display dos sprites DONE
+3-tornar os sprites em butões DONE
+4-fazer com que a grelha ajuste na escolha de dificudade FUCKING DONE
+problema: a grelha é definida como uma constante
+
+UI + config menu +  ---» 0.3 ON DELETE ME 3 copia
+1-Encontrar todos os elementos dependentes da resolução DONE
+# 1 definida a resolução pelas linhas 8 a 10
+# 2 box size para detetar 3x3 (função) linhas 24 a 26
+# 3 box size definido no reset state linhas 220 a 222
+#? Está assim tão mau? resolução forçada a metade
+2-Formatar a fonte posição e tamanho DONE
+3- centrar botao start DONE
+4- mudar sistema de load de sprites de forma permitir sprites não quadrados DONE
+6-refazer Dificultylabel sprite DONE
+5- adicionar difuclty label DONE
+	ajustar butoes à direita DONE
+- adicionar config button DONE
+- criar o novo state (butao de volta) DONE
+-melhorar leaderboard DONE
+criar slider DONE
+faz um 0 a 100 % to dos 
+
+now what? how did we get here?
+
+0.4
+virtual keyboard is complete
+new sounds is complete
+leaderboard in the main menu is complete
+leaderboard sorting is complete
+tuturial is complete
+
+working volume adjuster:
+-right thing position DO
+-right value being displayed DONE
+-adjusting the actual volume TO DO
+-label 
+top time presenting at the right part of the score menu
+maybe existing names for other attempts like BOB LOU
+
+tuturial
+- tutorial button DONE
+- tutorial state with back button DONE
+- avance button
+- actual powerslide:
+	.frases
+	.ilustrações
+ 
+ leaderboards no main menu
+ >> o state score tem dependecias do state wo DONE
+
+ opção de não guardar score
+
+AI REVOLUTION
+
+adicionar condição so that in the won state u dont save score if ur timme is 0 DONE
+0.5 propousal.
+AGAINST TIME MODE
+1v1 MODE
+	butão DONE
+	estado secundário DONE
+	var to keep time  DONE
+	compare system DONE
+	var to keep score DONE
+	score display DONE
+	rondas jogaveis? DONE
+		#pq é q n dá?- turn n voltava a ser 1 DONE
+	limite 3 rondas
+	texto de viitória~
+	texto tutorial
+
+HARDCORE MODE????
+xtra blockers + time limit
+	falta o time limit
+		-sta = gameover DONE
+		-tela de GAMEOVER DONE
+		-relogiozin DONE
+	falta texto explicativo DONE
+	blockers need to be limited in the adjacent points DONE
+	pq neste momento podem chegar a blockear o centro DONE
+	- identifiquei as caixas perto DONE
+	-inclusão do butão DONE
+	leaderboard especial para o modo
+bugs 
+leaderboard n ajusta DONE
+nomes na leaderboard devem acupular DONE
+n dá pra usar esc ingame

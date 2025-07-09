@@ -14,7 +14,7 @@ highlight the path displayed at the top and change it to cmd
 
 press enter; command prompt should open up
 
-type pyinstaller --onefile -w [name of file].py
+type pyinstaller --onefile -w main.py
 
 wait for it to finish
 
